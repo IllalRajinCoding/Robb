@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page - Chat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom styles for the page */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f9fafb;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center">
+
+  <!-- Header Section -->
+  <header class="text-center mb-12">
+    <h1 class="text-4xl font-bold text-gray-800">Selamat Datang di Halaman Chat</h1>
+    <p class="text-xl text-gray-600">Kirimkan pesan Anda dan kami akan segera merespons!</p>
+  </header>
+
+  <!-- Chat Section -->
+  <div class="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
+    <div id="chatBox" class="mb-4 h-64 overflow-y-auto p-4 bg-gray-100 rounded-lg">
+      <!-- Messages will be displayed here -->
+    </div>
+
+    <!-- Chat Form (User) -->
+    <div class="flex items-center space-x-4 mb-4">
+      <input type="text" id="messageInput" class="flex-1 p-2 border rounded-md" placeholder="Ketik pesan...">
+      <button id="sendMessageBtn" class="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600">
+        Kirim
+      </button>
+    </div>
+
+    <!-- Admin Reply Form -->
+    <div id="adminReplySection" class="mt-4 hidden">
+      <textarea id="adminReplyInput" class="w-full p-2 border rounded-md" placeholder="Balas pesan..." rows="3"></textarea>
+      <button id="sendAdminReplyBtn" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+        Kirim Balasan
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center mt-12 text-gray-500">
+    <p>&copy; 2025 Illal Web. Semua hak cipta dilindungi.</p>
+  </footer>
+
+  <script>
+    // Default username for the owner of the website
+    const ownerUsername = 'Illal';
+    // Default username for other users
+    const defaultUsername = 'sigma';
+
+    let currentMessageId = null; // Track which message is selected for reply
+
+    // Function to send message
+    function sendMessage(username, message, isAdmin = false) {
+      const chatBox = document.getElementById('chatBox');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('mb-4');
+
+      const messageTypeClass = isAdmin ? 'text-blue-600' : 'text-gray-800';
+      messageDiv.innerHTML = `
+        <div class="${messageTypeClass}"><strong>${username}:</strong> <span>${message}</span></div>
+        ${isAdmin ? '' : `<button class="mt-2 text-sm text-blue-500" onclick="prepareAdminReply(${chatBox.children.length})">Balas</button>`}
+      `;
+      
+      chatBox.appendChild(messageDiv);
+      
+      // Scroll to the bottom of the chat box
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Function to prepare reply form for admin
+    function prepareAdminReply(messageId) {
+      currentMessageId = messageId;
+      document.getElementById('adminReplySection').classList.remove('hidden');
+    }
+
+    // Function to send admin reply
+    function sendAdminReply() {
+      const messageInput = document.getElementById('adminReplyInput');
+      const message = messageInput.value.trim();
+
+      if (message) {
+        sendMessage(ownerUsername, message, true); // Send admin reply
+        document.getElementById('adminReplySection').classList.add('hidden');
+        messageInput.value = ''; // Clear the input field
+      }
+    }
+
+    // Event listener for the send message button (User)
+    document.getElementById('sendMessageBtn').addEventListener('click', function() {
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value.trim();
+
+      if (message) {
+        sendMessage(defaultUsername, message); // Send user message
+        messageInput.value = ''; // Clear the input field
+      }
+    });
+
+    // Event listener for the send admin reply button
+    document.getElementById('sendAdminReplyBtn').addEventListener('click', sendAdminReply);
+
+    // Optional: Allow users to press Enter to send message
+    document.getElementById('messageInput').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        document.getElementById('sendMessageBtn').click();
+      }
+    });
+  </script>
+</body>
+</html>
